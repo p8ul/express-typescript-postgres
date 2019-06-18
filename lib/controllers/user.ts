@@ -24,18 +24,18 @@ export class UserController {
     }
 
     public async getUserWithId (req: Request, res: Response) {
-        const user = await db.User.findAll({ where: {id: req.params.userId}});
-        if (user.length < 1) res.status(404).json({message: "User not found"});
+        const user = await db.User.findByPk(req.params.userId);
+        if (!user) res.status(404).json({message: "User not found"});
         return res.status(200).json(user);
     }
 
     public async emailLogin (req: Request, res: Response) {  
-        const user = await db.User.findAll({where: { email: req.body.email }});
+        const user = await db.User.findOne({where: { email: req.body.email }});
         const message = 'Email or Password do not match';
-        if (user.length < 1) return res.status(401).json({message});
-        const isValid = await bcrypt.compareSync(req.body.password.toString(), user[0].password)
+        if (!user) return res.status(401).json({message});
+        const isValid = await bcrypt.compareSync(req.body.password.toString(), user.password)
         if (!isValid) return res.status(401).json({message});
-        return res.status(200).json({token: generateToken(user[0])});
+        return res.status(200).json({token: generateToken(user)});
 
     }
 

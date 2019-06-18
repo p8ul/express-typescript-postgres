@@ -1,7 +1,8 @@
 import * as express from 'express';
 import * as bodyParser from "body-parser";
-import * as dotenv from 'dotenv';
+import * as dotenv from "dotenv";
 import { Routes } from './routes';
+import { baseMiddleware } from './middleware';
 dotenv.config();
 class App {
     public app: express.Application;
@@ -10,7 +11,7 @@ class App {
     constructor() {
         this.app = express();
         this.config();
-        this.route.routes(this.app);        
+        this.route.routes(this.app);
     }
 
     private config(): void {
@@ -18,7 +19,10 @@ class App {
         this.app.use(bodyParser.json());
 
         // support application/x-www-form-urlencoded post data
-        this.app.use(bodyParser.urlencoded({ extended: false}));
+        this.app.use(bodyParser.urlencoded({ extended: false }));
+
+        // Register middleware
+        this.app.use(baseMiddleware);
     }
 }
 
